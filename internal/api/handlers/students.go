@@ -12,20 +12,21 @@ import (
 )
 
 func GetStudentsHandler(w http.ResponseWriter, r *http.Request) {
+
 	var students []models.Student
 	// url?limit=50&page=1
 	// database will leave/will not show calculated entries from the beginning, page -1 * limit (1-1*50 = 0*50 = 0)
 	// page 2 , 2-1 *50 = 50, next 50 entries
 	page, limit := getPaginationParams(r)
 	students, totalStudents, err := sqlconnect.GetStudentsDbHandler(students, r, limit, page)
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	response := struct {
 		Status   string           `json:"status"`
-		Count    int              `jason:"count"`
+		Count    int              `json:"count"`
 		Page     int              `json:"page"`
 		PageSize int              `json:"page_size"`
 		Data     []models.Student `json:"data"`
@@ -39,6 +40,7 @@ func GetStudentsHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+
 }
 
 func getPaginationParams(r *http.Request) (int, int) {

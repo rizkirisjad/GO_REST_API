@@ -17,6 +17,7 @@ func GetStudentsDbHandler(students []models.Student, r *http.Request, limit, pag
 	if err != nil {
 		return nil, 0, utils.ErrorHandler(err, "error retrieving data")
 	}
+
 	defer db.Close()
 
 	query := "SELECT id, first_name, last_name, email, class FROM students WHERE 1=1"
@@ -26,7 +27,7 @@ func GetStudentsDbHandler(students []models.Student, r *http.Request, limit, pag
 
 	// Add pagination
 	offset := (page - 1) * limit
-	query += "LIMIT ? OFFSET ?"
+	query += " LIMIT ? OFFSET ?"
 	args = append(args, limit, offset)
 
 	query = utils.AddSorting(r, query)
@@ -54,7 +55,6 @@ func GetStudentsDbHandler(students []models.Student, r *http.Request, limit, pag
 		utils.ErrorHandler(err, "")
 		totalStudents = 0
 	}
-
 	return students, totalStudents, nil
 }
 
